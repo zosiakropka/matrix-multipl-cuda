@@ -5,6 +5,8 @@
  * Created on November 20, 2013, 7:17 PM
  */
 
+#include <stdio.h>
+#include "mt19937-64.c"
 
 #define BLOCK_SIZE 4
 
@@ -23,6 +25,47 @@ __global__ void multiple(float* C, float* A, float* B, uint size) {
     C[y * size + x] = C_yx;
 }
 
+namespace mtrx {
+    namespace host {
+
+        void alloc_mem(float** matrix, uint size) {
+            (*matrix) = (float*) malloc(size * size * sizeof (float));
+        }
+
+        void free_mem(float** matrix) {
+            free((*matrix));
+            (*matrix) = NULL;
+        }
+
+        void fill(float** matrix, uint size) {
+            for (uint i = 0; i < size * size; ++i)
+                (*matrix)[i] = (float) genrand64_real1();
+        }
+
+        void cuda_host2dev(float *host_matrix, float *dev_matrix, uint size) {
+            cudaMemcpy(dev_matrix, host_matrix, size*size, cudaMemcpyHostToDevice);
+        }
+
+    }
+    namespace dev {
+
+        void alloc_mem(float** matrix, uint size) {
+            cudaMalloc((void**) matrix, size * size * sizeof (float));
+        }
+
+        void free_mem(float** matrix) {
+            cudaFree((*matrix));
+            (*matrix) = NULL;
+        }
+
+        void cuda_dev2host(float* dev_matrix, float* host_matrix, uint size) {
+            cudaMemcpy(host_matrix, dev_matrix, size*size, cudaMemcpyDeviceToHost);
+        }
+    }
+}
+
+/**
+ */
 int main(int argc, char** argv) {
 
     //////////////////////////////////////////////////////////////////////////
