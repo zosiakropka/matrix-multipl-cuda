@@ -110,6 +110,24 @@ int main(int argc, char** argv) {
     mtrx::dev::alloc_mem(&C_dev, size);
 
 
+
+    //////////////////////////////////////////////////////////////////////////
+    // SEND TO GPU
+
+    mtrx::host::cuda_host2dev(A_host, A_dev, size);
+    mtrx::host::cuda_host2dev(B_host, B_dev, size);
+
+    // dimensions of the blocks
+    dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
+
+    // dimensions of the grid
+    dim3 grid(size / threads.x, size / threads.y);
+
+    //////////////////////////////////////////////////////////////////////////
+    // RETRIEVE FROM GPU
+
+    mtrx::dev::cuda_dev2host(C_dev, C_host, size);
+
     //////////////////////////////////////////////////////////////////////////
     // FREE MEMORY
 
