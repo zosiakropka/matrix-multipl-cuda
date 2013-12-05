@@ -9,6 +9,18 @@
 #define BLOCK_SIZE 4
 
 __global__ void multiple(float* C, float* A, float* B, uint size) {
+
+    int x = threadIdx.x;
+    int y = threadIdx.y;
+
+    float C_yx = 0;
+    for (uint i = 0; i < size; ++i) {
+        float A_yi = A[y * size + i];
+        float B_ix = B[i * size + x];
+        C_yx += A_yi * B_ix;
+    }
+
+    C[y * size + x] = C_yx;
 }
 
 int main(int argc, char** argv) {
