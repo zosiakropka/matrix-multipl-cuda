@@ -124,6 +124,11 @@ int main(int argc, char** argv) {
     dim3 grid(size / threads.x, size / threads.y);
 
     //////////////////////////////////////////////////////////////////////////
+    // CREATE EVENTS FOR TIME MEASUREMENT
+    cudaEvent_t start, stop;
+    cudaEventCreate(&start);
+    cudaEventCreate(&stop);
+
     //////////////////////////////////////////////////////////////////////////
     // RUN KERNEL
     cudaEventRecord(start, 0); // start time measurement
@@ -132,6 +137,15 @@ int main(int argc, char** argv) {
     cudaEventSynchronize(start);
     cudaEventSynchronize(stop);
 
+    //////////////////////////////////////////////////////////////////////////
+    // CALC EXECUTION TIME
+    float time;
+    cudaEventElapsedTime(&time, start, stop);
+    cudaEventDestroy(start);
+    cudaEventDestroy(stop);
+    printf(time_msg, time);
+
+    //////////////////////////////////////////////////////////////////////////
     // RETRIEVE FROM GPU
 
     mtrx::dev::cuda_dev2host(C_dev, C_host, size);
@@ -146,5 +160,6 @@ int main(int argc, char** argv) {
     mtrx::dev::free_mem(&A_dev);
     mtrx::dev::free_mem(&B_dev);
     mtrx::dev::free_mem(&C_dev);
+
 
 }
