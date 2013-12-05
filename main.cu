@@ -84,4 +84,41 @@ int main(int argc, char** argv) {
 
     uint size = atoi(argv[2]);
 
+    //////////////////////////////////////////////////////////////////////////
+    // INPUT
+    float* A_host;
+    mtrx::host::alloc_mem(&A_host, size);
+    mtrx::host::fill(&A_host, size);
+
+    float* B_host;
+    mtrx::host::alloc_mem(&B_host, size);
+    mtrx::host::fill(&B_host, size);
+
+    float* A_dev;
+    mtrx::dev::alloc_mem(&A_dev, size);
+
+    float* B_dev;
+    mtrx::dev::alloc_mem(&B_dev, size);
+
+    //////////////////////////////////////////////////////////////////////////
+    // OUTPUT
+
+    float* C_host;
+    mtrx::host::alloc_mem(&C_host, size);
+
+    float* C_dev;
+    mtrx::dev::alloc_mem(&C_dev, size);
+
+
+    //////////////////////////////////////////////////////////////////////////
+    // FREE MEMORY
+
+    mtrx::host::free_mem(&A_host);
+    mtrx::host::free_mem(&B_host);
+    mtrx::host::free_mem(&C_host);
+
+    mtrx::dev::free_mem(&A_dev);
+    mtrx::dev::free_mem(&B_dev);
+    mtrx::dev::free_mem(&C_dev);
+
 }
