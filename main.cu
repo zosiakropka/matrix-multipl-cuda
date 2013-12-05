@@ -124,6 +124,14 @@ int main(int argc, char** argv) {
     dim3 grid(size / threads.x, size / threads.y);
 
     //////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////
+    // RUN KERNEL
+    cudaEventRecord(start, 0); // start time measurement
+    multiple << < grid, threads >> >(C_dev, A_dev, B_dev, size); // run
+    cudaEventRecord(stop, 0); // stop time measurement
+    cudaEventSynchronize(start);
+    cudaEventSynchronize(stop);
+
     // RETRIEVE FROM GPU
 
     mtrx::dev::cuda_dev2host(C_dev, C_host, size);
