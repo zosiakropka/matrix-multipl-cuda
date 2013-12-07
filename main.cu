@@ -11,7 +11,6 @@
 
 #include "kernel.cu"
 
-
 int main(int argc, char** argv) {
 
     //////////////////////////////////////////////////////////////////////////
@@ -37,6 +36,11 @@ int main(int argc, char** argv) {
     } else {
         strcpy(time_msg, "%fms\n");
     }
+    uint iterations = 1;
+    const char* iterations_ch = getenv("TESTITERATIONS");
+    if (iterations_ch != NULL) {
+        iterations = atoi(iterations_ch);
+    }
 
     //////////////////////////////////////////////////////////////////////////
     // INPUT
@@ -56,7 +60,6 @@ int main(int argc, char** argv) {
 
     //////////////////////////////////////////////////////////////////////////
     // OUTPUT
-
     float* C_host;
     mtrx::host::alloc_mem(&C_host, size);
 
@@ -65,7 +68,6 @@ int main(int argc, char** argv) {
 
     //////////////////////////////////////////////////////////////////////////
     // SEND TO GPU
-
     mtrx::host::cuda_host2dev(A_host, A_dev, size);
     mtrx::host::cuda_host2dev(B_host, B_dev, size);
 
@@ -78,11 +80,16 @@ int main(int argc, char** argv) {
     // TIME MEASUREMENT START
     float time = 1.0;
     cudaEvent_t start, stop;
-    cudaEventCreate(&start);
-    cudaEventCreate(&stop);
+    mtrx::dev::test(cudaEventCreate(&start));
+    mtrx::dev::test(cudaEventCreate(&stop));
+
+    mtrx::dev::test(cudaEventRecord(start, NULL)); // start time measurement
 
     //////////////////////////////////////////////////////////////////////////
     // RUN KERNEL
+    for (uint i = 0; i < iterations; i++) {
+        multiple << < grid, block >> >(C_dev, A_dev, B_dev, size); // run
+        mtrx::dev::test(cudaGetLastError());
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -113,3 +120,4 @@ int main(int argc, char** argv) {
 
 
 }
+
