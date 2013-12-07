@@ -35,7 +35,7 @@ int main(int argc, char** argv) {
     if (testrun != NULL && (*testrun) == 'y') {
         strcpy(time_msg, "%d");
     } else {
-        strcpy(time_msg, "%dms\n");
+        strcpy(time_msg, "%fms\n");
     }
 
     uint size = atoi(argv[2]);
