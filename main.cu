@@ -38,8 +38,6 @@ int main(int argc, char** argv) {
         strcpy(time_msg, "%fms\n");
     }
 
-    uint size = atoi(argv[2]);
-
     //////////////////////////////////////////////////////////////////////////
     // INPUT
     float* A_host;
