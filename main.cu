@@ -69,42 +69,40 @@ int main(int argc, char** argv) {
     mtrx::host::cuda_host2dev(A_host, A_dev, size);
     mtrx::host::cuda_host2dev(B_host, B_dev, size);
 
-    // dimensions of the blocks
-    dim3 threads(BLOCK_SIZE, BLOCK_SIZE);
-
-    // dimensions of the grid
-    dim3 grid(size / threads.x, size / threads.y);
+    //////////////////////////////////////////////////////////////////////////
+    // BLOCKS AND GRID DIMENSIONS
+    dim3 block(BLOCK_SIZE, BLOCK_SIZE);
+    dim3 grid((size + BLOCK_SIZE) / BLOCK_SIZE - 1, (size + BLOCK_SIZE) / BLOCK_SIZE - 1);
 
     //////////////////////////////////////////////////////////////////////////
-    // CREATE EVENTS FOR TIME MEASUREMENT
+    // TIME MEASUREMENT START
+    float time = 1.0;
     cudaEvent_t start, stop;
     cudaEventCreate(&start);
     cudaEventCreate(&stop);
 
     //////////////////////////////////////////////////////////////////////////
     // RUN KERNEL
-    cudaEventRecord(start, 0); // start time measurement
-    multiple << < grid, threads >> >(C_dev, A_dev, B_dev, size); // run
-    cudaEventRecord(stop, 0); // stop time measurement
-    cudaEventSynchronize(start);
-    cudaEventSynchronize(stop);
+    }
 
-    //////////////////////////////////////////////////////////////////////////
-    // CALC EXECUTION TIME
-    float time;
+    //////////////////////////////////////////////////////////////////////
+    // TIME MEASUREMENT STOP
+    mtrx::dev::test(cudaEventRecord(stop, NULL)); // stop time measurement
+    cudaEventSynchronize(stop);
     cudaEventElapsedTime(&time, start, stop);
-    cudaEventDestroy(start);
-    cudaEventDestroy(stop);
+
     printf(time_msg, time);
 
-    //////////////////////////////////////////////////////////////////////////
-    // RETRIEVE FROM GPU
+    cudaEventDestroy(start);
+    cudaEventDestroy(stop);
 
+    //////////////////////////////////////////////////////////////////////
+    // RETRIEVE FROM GPU
     mtrx::dev::cuda_dev2host(C_dev, C_host, size);
+    // do something with calculated matrix... (printf maybe?)
 
     //////////////////////////////////////////////////////////////////////////
     // FREE MEMORY
-
     mtrx::host::free_mem(&A_host);
     mtrx::host::free_mem(&B_host);
     mtrx::host::free_mem(&C_host);
