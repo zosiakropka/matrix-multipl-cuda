@@ -17,9 +17,19 @@ int main(int argc, char** argv) {
     //////////////////////////////////////////////////////////////////////////
     // USAGE
 
-    if (argc != 3) {
-        printf("Usage: %s <dummy> <matrix_size N=width=height>", argv[0]);
+    uint size;
+    switch (argc) {
+        case 2:
+            size = atoi(argv[1]);
+            break;
+        case 3:
+            size = atoi(argv[2]);
+            break;
+        default:
+            printf("Usage: %s [dummy] <matrix_size N=width=height>\n", argv[0]);
+            exit(64);
     }
+
     char time_msg[20];
     const char* testrun = getenv("TESTRUN");
     if (testrun != NULL && (*testrun) == 'y') {
