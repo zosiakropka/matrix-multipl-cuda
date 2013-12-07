@@ -7,10 +7,9 @@
 
 #include <stdio.h>
 #include "mt19937-64.c"
-#include "utils.h"
+#include "utils.cu"
 
 #include "kernel.cu"
-#define BLOCK_SIZE 4
 
 
 int main(int argc, char** argv) {
